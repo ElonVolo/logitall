@@ -1,0 +1,28 @@
+{
+  "name": "logitall",
+  "version": "1.0.0",
+  "description": "A program for making your code console.log() everything. logitall logs it all.",
+  "main": "index.js",
+  "repository": "https://github.com/elonvolo/logitall.git",
+  "author": "Elon Volo<elonvolo@gmail.com> (https://github.com/elonvolo)",
+  "scripts": {
+    "logitall": "node bin/logitall.js"
+  },
+  "bin": {
+    "logitall": "./bin/logitall.js"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "commander": "^4.1.1",
+    "jscodeshift": "^0.7.0",
+    "jscodeshift-helper": "^1.1.0",
+    "lodash": "^4.17.15"
+  },
+  "keywords": [
+    "console.log",
+    "logitall",
+    "all"
+  ],
+  "license": "MIT"
+}
