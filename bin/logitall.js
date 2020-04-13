@@ -9,6 +9,7 @@ commander
     .arguments('<filepath>')
     .name('logitall')
     .usage('(filepath | dirpath)')
+    .option('--ignore-config <configfile>', 'a .gitignore-style list of file patterns to ignore')
     .arguments('<filepath>')
     .parse(process.argv)
 
@@ -26,7 +27,13 @@ if (commander.args.length === 0) {
 let parentDir = require('path').resolve(__dirname, '..');
 let jsc = path.join(parentDir, 'node_modules', 'jscodeshift', 'bin', 'jscodeshift.js');
 let transformPath = path.join(parentDir, 'transform.js');
-let args = [jsc, '-t', transformPath, '--extensions=ts', '--parser=ts', commander.args[0], '--verbose=2', `--relpath=${commander.args[2]}`];
+let args = [jsc, '-t', transformPath, '--extensions=ts', '--parser=ts', commander.args[0], '--verbose=2'];
+
+if (commander.ignoreConfig) {
+    args.push(`--ignore-config=${commander.ignoreConfig}`);
+}
+
+args.push(`--relpath=${commander.args[2]}`);
 
 const jscodeshift = child_process.spawn('node', args);
 
