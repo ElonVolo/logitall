@@ -5,13 +5,13 @@ logitall is a sort of "dumb tracing" utitlity goes through your entire codebase 
 
 I created logitall becase I had to deal with way too many situations where sourcemapping/debugging breaks in a JavaScript/TypeScript project and using the debugger just isn't possible.
 
-## Installation
+##Installation
 
 npm install -g logitall
 
 ## Warning
 
-It is highly recommended that you run logitall on a copied duplicate of whatever  project you're trying to debug. 
+It is highly recommended that you run logitall on a copied duplicate of whatever  project you're trying to debug. logitally will permanently add thousands of console.log statements to your project, and not everyone on your team will appreciate that in a code review.
 
 ## Usage
 
@@ -19,11 +19,11 @@ Run logitall from the command line and point it to the file/directory path of th
 
 **logitall** _path_
 
-For example, if you had a project called MyProject, and it contained a source directory named source, you would run the command
+For example, let's say you have a project called MyProject, and it contained a source directory named src. To instrument all the code in the src directory using logitall, you would run the command
 
 ```logitall MyProject/src```
 
-If there was a typescript class located in MyProject/src that was named NumberAdder.ts, running the above command would change the contents of the NumberAdder class from
+If there was a typescript class named NumberAdder located in MyProject/src/NumberAdder.ts, running the above command would change the contents of the NumberAdder class from the following below:
 
 ```
 class NumberAdder {
@@ -35,15 +35,15 @@ class NumberAdder {
 }
 ```
 
-to
+to this:
 
 ```
 class NumberAdder {
 
     addTwoNumbers(numOne: number, numTwo: number) {
-        console.log("[logitall]  TestThing.ts:3:addTwoNumbers()");
+        console.log("[logitall]  NumberAdder.ts:3:addTwoNumbers()");
         let newNumber = numOne + numTwo;
-        console.log("[logitall]  TestThing.ts:5");
+        console.log("[logitall]  NumberAdder.ts:5");
         return newNumber;
     }
 }
