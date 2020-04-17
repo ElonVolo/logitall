@@ -6,7 +6,7 @@ logitall is a sort of "dumb tracing" utitlity that goes through your entire code
 #### Why? Just. Please. Tell. Us. Why. 
 I created logitall becase over a great many years I had to deal with way too many situations where sourcemapping/debugging breaks in a JavaScript/TypeScript project and using the debugger to step through code like a normal person just isn't an option.
 
-##Installation
+## Installation
 
 npm install -g logitall
 
