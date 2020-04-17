@@ -49,5 +49,41 @@ class NumberAdder {
 }
 ```
 
+When you run the code you should see in your debugging console/browser something like the following
+
+```
+> [logitall]  NumberAdder.ts:3:addTwoNumbers()
+> [logitall]  NumberAdder.ts:5
+```
+
+#### How to intepret the results
+
+In most cases logitall's console.log() statements will display the name of the file, possibly the name of the function that's been entered (if there is one), and the line at which it occurred. Many other kinds of statements, such as return's and anonymous functions, are also logged.
+
+Note that the line numbers being printed to the console are the line numbers that existed _prior to logitall being run_!. For example, in the __NumberAdder.ts__ file modified by logitall in the earlier example, the following line appears on the 4th line of the NumberAdder.ts file, even though the original code it's referring to is on the 3rd line.
+
+```console.log("[logitall]  NumberAdder.ts:3:addTwoNumbers()");```
+
+To use logitall to its fullest extent, have an modified version of your project open in an extra IDE project window. As you read through the list of program lines in your browser, refer to the corresponding code in your original project.
+
+#### Ignoring troublesome code
+
+There might be certain source code files or directories that you do not wish to modify. This might be because those items really should not be logged because they are essentially configuration files (e.g. karma.conf.js). Or your reason for using the ignore feature could be one really huge source code file pushing 20 MB that contains thousands of constants declared in JS--and that would take forever for logitall to parse.
 
 
+Whatever your reason for ignoring certain files and directories, the way to ignore them is to create a .gitignore-style file where each pattern/path for a file(s)/directory(ies) you want logitall to avoid is on its own line. Once you've created the ignore file, run the logitall command with the __--ignore-config__ flag and pass in the path to your ignore file.
+
+As previously mentioned, a common example where you might use the --ignore-config option would be running logitall on the root level of a project directory that contains a node\_modules directory. As there might be thousands of modules in the node_modules directory, you probably do not want all of them instrumented with logitall and printing millions of console.log() statements. So you create a file named __my-projects-logitall-ignore__ with the following line in your ignore file:
+
+```node_modules/```
+
+If you then wanted to add a second file to ignore, let's say the karma.conf.js config file used to set up unit tests in jasmine, you'd add the name of that file and now you have the following two lines in your ignore file:
+
+```
+node_modules/
+karma.conf.js
+```
+
+To run the logitall script with the newly added ignores, you would run the following command:
+
+__logitall__ __---ignore-config__ __my-projects-logitall-ignore__
