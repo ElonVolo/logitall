@@ -12,7 +12,7 @@ npm install -g logitall
 
 ## Warning
 
-It is highly recommended that you run logitall on a copied duplicate of whatever  project you're trying to debug. logitally will permanently add thousands of console.log statements to your project, and not everyone on your team will appreciate that in a code review.
+It is highly recommended that you run logitall on a copied duplicate of whatever  project you're trying to debug. logitall will permanently add thousands of console.log statements to your project, and not everyone on your team will appreciate that in a code review.
 
 ## Usage
 
