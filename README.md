@@ -1,9 +1,10 @@
 # logitall
 
 ### "logitall logs it all!"
-logitall is a sort of "dumb tracing" utitlity goes through your entire codebase (or specified portion thereof) adding console.log() statements methods to specify when functions, and many kinds of statements are being executed. This provides real-time debugging info in the debugging console without having to use a debugging to step through code to see what's happening.
+logitall is a sort of "dumb tracing" utitlity that goes through your entire codebase (or specified portion thereof) adding console.log() statements methods to specify when functions, and many kinds of statements are being executed. This approach provides real-time debugging info in the debugging console without having to use a debugger to step through code to see what's happening.
 
-I created logitall becase I had to deal with way too many situations where sourcemapping/debugging breaks in a JavaScript/TypeScript project and using the debugger just isn't possible.
+#### Why? Just. Please. Tell. Us. Why. 
+I created logitall becase over a great many years I had to deal with way too many situations where sourcemapping/debugging breaks in a JavaScript/TypeScript project and using the debugger to step through code like a normal person just isn't an option.
 
 ##Installation
 
@@ -19,11 +20,11 @@ Run logitall from the command line and point it to the file/directory path of th
 
 **logitall** _path_
 
-For example, let's say you have a project called MyProject, and it contained a source directory named src. To instrument all the code in the src directory using logitall, you would run the command
+For example, let's say you have a project called MyProject, and it contained a source directory named src. To instrument all the source code files in the src directory and its descdendants using logitall, you would run the command
 
 ```logitall MyProject/src```
 
-If there was a typescript class named NumberAdder located in MyProject/src/NumberAdder.ts, running the above command would change the contents of the NumberAdder class from the following below:
+What would this command specifically do, code-wise? Let's say there is a Typescript class named NumberAdder located in MyProject/src/NumberAdder.ts. Running the above command would change the contents of the NumberAdder class from the following below:
 
 ```
 class NumberAdder {
@@ -60,11 +61,11 @@ When you run the code you should see in your debugging console/browser something
 
 In most cases logitall's console.log() statements will display the name of the file, possibly the name of the function that's been entered (if there is one), and the line at which it occurred. Many other kinds of statements, such as return's and anonymous functions, are also logged.
 
-Note that the line numbers being printed to the console are the line numbers that existed _prior to logitall being run_!. For example, in the __NumberAdder.ts__ file modified by logitall in the earlier example, the following line appears on the 4th line of the NumberAdder.ts file, even though the original code it's referring to is on the 3rd line.
+Note that the line numbers being printed to the console are actually the line numbers that existed _prior to logitall being run_!. For example, in the __NumberAdder.ts__ file modified by logitall in the earlier example, the following line appears on the 4th line of the NumberAdder.ts file, even though the original code it's referring to is on the 3rd line.
 
 ```console.log("[logitall]  NumberAdder.ts:3:addTwoNumbers()");```
 
-To use logitall to its fullest extent, have an modified version of your project open in an extra IDE project window. As you read through the list of program lines in your browser, refer to the corresponding code in your original project.
+To use logitall to its fullest extent, you should have an unmodified version of your project open in the IDE of your choice sitting next to whatever's printing out the console.log() statements (browser, etc). As you read through the list of logged lines in your browser, refer to the corresponding code in your original project.
 
 #### Ignoring troublesome code
 
