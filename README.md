@@ -88,3 +88,7 @@ karma.conf.js
 To run the logitall script with the newly added ignores, you would run the following command:
 
 __logitall__ __---ignore-config__ __my-projects-logitall-ignore__
+
+#### Undoing logitall
+
+The best, most safest way to use logitall is to make a complete duplicate of your project folder and run logitall on a copy of your code. If you are reasonably proficient with git, you could make sure all your changes prior to running logitall are stashed/committed, check out a branch, and then run logitall on the branch. You could also run logitall on your working branch (again with all changes stashed/committed), and then do a git checkout -- name_of_directory_you_ran_logitall_on to get rid of the changes logitall made.
