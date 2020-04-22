@@ -5,6 +5,7 @@ module.exports = function(fileInfo, api, options) {
     const j = api.jscodeshift;
     const root = j(fileInfo.source);
     const relPath = options['relpath'];
+    const namedFunctionsOnly = options['named-functions-only']
 
     const LIA_PREFIX = '[logitall]  ';
     const LIA_SUFFIX = '';
@@ -245,10 +246,13 @@ module.exports = function(fileInfo, api, options) {
 
     addLoggingToTSMethods(root, fileInfo.path);
     addLoggingToFunctionDeclarations(root, fileInfo.path);
-    addLoggingToArrowFunctions(root, fileInfo.path);
-    addLoggingToAnonymousFunctions(root, fileInfo.path);
-    addLoggingToExpressionStatement(root, fileInfo.path);
-    addLoggingToReturnStatement(root, fileInfo.path);
+
+    if (!namedFunctionsOnly) {
+        addLoggingToArrowFunctions(root, fileInfo.path);
+        addLoggingToAnonymousFunctions(root, fileInfo.path);
+        addLoggingToExpressionStatement(root, fileInfo.path);
+        addLoggingToReturnStatement(root, fileInfo.path);
+    }
 
     return root.toSource();
 }

@@ -10,6 +10,7 @@ commander
     .name('logitall')
     .usage('(filepath | dirpath)')
     .option('--ignore-config <configfile>', 'a .gitignore-style list of file patterns to ignore')
+    .option('--named-functions-only', 'only log non-anonymous functions and methods')
     .arguments('<filepath>')
     .parse(process.argv)
 
@@ -31,6 +32,10 @@ let args = [jsc, '-t', transformPath, '--extensions=ts', '--parser=ts', commande
 
 if (commander.ignoreConfig) {
     args.push(`--ignore-config=${commander.ignoreConfig}`);
+}
+
+if (commander.namedFunctionsOnly) {
+    args.push('--named-functions-only')
 }
 
 args.push(`--relpath=${commander.args[2]}`);

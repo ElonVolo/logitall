@@ -1,6 +1,5 @@
 # logitall
 
-![alt logitall_image](docs/images/logitall-example.png?raw=true "Title")
 ### "logitall logs it all!"
 logitall is a sort of "dumb tracing" utitlity that goes through your entire codebase (or specified portion thereof) adding console.log() statements methods to specify when functions, and many kinds of statements are being executed. This approach provides real-time debugging info in the debugging console without having to use a debugger to step through code to see what's happening.
 
@@ -90,6 +89,10 @@ To run the logitall script with the newly added ignores, you would run the follo
 
 __logitall__ __---ignore-config__ __my-projects-logitall-ignore__
 
+#### Minimalistic logging
+Passing in the __--named-functions-only__ flag to logitall command limits logging to only cases where named functions and methods are called. 
+
+This feature can be useful when you need an uncluttered, 50,000 ft view of what basic functions/methods are being called in your program.
 
 #### Undoing logitall
 
