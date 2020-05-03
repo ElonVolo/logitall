@@ -1,5 +1,7 @@
 # logitall
 
+![alt logitall_image](docs/images/logitall-example.png?raw=true "Title")
+
 ### "logitall logs it all!"
 logitall is a sort of "dumb tracing" utitlity that goes through your entire codebase (or specified portion thereof) adding console.log() statements methods to specify when functions, and many kinds of statements are being executed. This approach provides real-time debugging info in the debugging console without having to use a debugger to step through code to see what's happening.
 
