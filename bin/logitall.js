@@ -11,6 +11,7 @@ commander
     .usage('(filepath | dirpath)')
     .option('--ignore-config <configfile>', 'a .gitignore-style list of file patterns to ignore')
     .option('--named-functions-only', 'only log non-anonymous functions and methods')
+    .option('--rxjs', 'support for adding logging to rxjs pipe stages')
     .arguments('<filepath>')
     .parse(process.argv)
 
@@ -35,7 +36,11 @@ if (commander.ignoreConfig) {
 }
 
 if (commander.namedFunctionsOnly) {
-    args.push('--named-functions-only')
+    args.push('--named-functions-only');
+}
+
+if (commander.rxjs) {
+    args.push('--rxjs');
 }
 
 args.push(`--relpath=${commander.args[2]}`);
