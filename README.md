@@ -96,6 +96,45 @@ Passing in the __--named-functions-only__ flag to logitall command limits loggin
 
 This feature can be useful when you need an uncluttered, 50,000 ft view of what basic functions/methods are being called in your program.
 
+#### rxjs support
+
+logitall now has experimental support for adding logging statements to rxjs. When the --rxjs flag is passed to logitall, logging statements are inserted before and after each stage of an rxjs pipeline.
+
+For example, the following code:
+
+```
+import { of, pipe } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
+
+let myStream$ = of(7).pipe(
+    map(x => x + 1), 
+    filter(x => x > 2)
+);
+```
+
+is transformed into
+```
+import { of, pipe } from 'rxjs';
+import { map, tap, filter } from 'rxjs/operators';
+
+let myStream$ = of(7).pipe(tap(x => {
+    console.log(
+        `[logitall]  Stage 0 value for rxjs pipe starting at line 4 in actual-rxjs-project/index.ts is:
+${x}\n`
+    );
+}), map(x => x + 1), tap(x => {
+    console.log(
+        `[logitall]  Stage 1 value for rxjs pipe starting at line 4 in actual-rxjs-project/index.ts is:
+${x}\n`
+    );
+}), filter(x => x > 2), tap(x => {
+    console.log(
+        `[logitall]  Final value for rxjs pipe starting at line 4 in actual-rxjs-project/index.ts is:
+${x}\n`
+    );
+}), );
+```
+
 #### Undoing logitall
 
 * The best, most safest way to use logitall is to make a complete duplicate of your project folder and run logitall on a copy of your code. 
