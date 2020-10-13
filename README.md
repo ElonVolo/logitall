@@ -2,21 +2,34 @@
 
 ![alt logitall_image](docs/images/logitall-example.png?raw=true "Title")
 
-### "logitall logs it all!"
-logitall is a sort of "dumb tracing" utitlity that goes through your entire codebase (or specified portion thereof) adding console.log() statements methods to specify when functions, and many kinds of statements are being executed. This approach provides real-time debugging info in the debugging console without having to use a debugger to step through code to see what's happening.
-
-#### Why? Just. Please. Tell. Us. Why. 
-I created logitall becase over a great many years I had to deal with way too many situations where sourcemapping/debugging breaks in a JavaScript/TypeScript project and using the debugger to step through code like a normal person just isn't an option.
+## "logitall logs it all!"
+logitall is a "dumb trace" debugging tool that modifies all the code in a JavaScript file to print a message to the console before each line of code is run.
 
 ## Installation
 
 npm install -g logitall
 
-## Warning
 
-It is highly recommended that you run logitall on a copied duplicate of whatever  project you're trying to debug. logitall will permanently add thousands of console.log statements to your project, and not everyone on your team will appreciate that in a code review.
+## Usage (CLI)
 
-## Usage
+```
+$ logitall --help
+
+Usage: logitall [OPTION] logitall (FILE | DIR)
+
+Options:
+  --ignore-config <configfile>  a .gitignore-style list of file patterns to
+                                ignore
+  --named-functions-only        only log non-anonymous functions and methods
+  --rxjs                        support for adding logging to rxjs pipe stages
+  -h, --help                    output usage information
+```
+
+## Tutorial
+
+_Warning: Before using logitall, it is highly recommended that you run logitall on a copy of whatever  project you're trying to debug. logitall will permanently add thousands of console.log statements to your project, and not everyone on your team will appreciate that in a code review._
+
+### First steps
 
 Run logitall from the command line and point it to the file/directory path of the code that needs console.log() statements added to it.
 
@@ -141,3 +154,7 @@ ${x}\n`
 * If you are reasonably proficient with git, you could make sure all your changes prior to running logitall are stashed/committed, check out a branch, and then run logitall on the branch.
 * You could also run logitall on your working branch (again with all changes stashed/committed), and then do a 
 * ```git checkout -- name_of_directory_you_ran_logitall_on``` to get rid of the changes logitall made.
+
+
+#### Why? Just. Please. Tell. Us. Why. 
+I created logitall becase over a great many years I had to deal with way too many situations where sourcemapping/debugging breaks in a JavaScript/TypeScript project and using the debugger to step through code like a normal person just isn't an option.
