@@ -10,7 +10,7 @@
     "test": "jest --bail"
   },
   "bin": {
-    "logitall": "./bin/logitall.js"
+    "logitall": "bin/logitall.js"
   },
   "devDependencies": {
     "jest": "^25.5.4"
