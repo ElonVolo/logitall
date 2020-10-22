@@ -2,18 +2,18 @@ var _ = require('lodash');
 var describe = require('jscodeshift-helper').describe;
 
 module.exports = function(fileInfo, api, options) {
-    console.log(options);
     const j = api.jscodeshift;
     const root = j(fileInfo.source);
     const relPath = options['relpath'];
     const namedFunctionsOnly = options['named-functions-only'];
     const rxjsSupport = options['rxjs'];
+    const logParamsEnabled = options['params'];
 
     const LIA_PREFIX = '[logitall]  ';
     const LIA_SUFFIX = '';
     const PRINT_LINE_NUMBERS = true;
 
-    const addLoggingToTSMethods = (path, filepath) => {
+    const addLoggingToTSMethods = (path, filepath, shouldLogParams) => {
         path.find(j.ClassMethod)
             .forEach(p => {
 
@@ -36,6 +36,17 @@ module.exports = function(fileInfo, api, options) {
                             )
                         )
                     } else {
+                        if (shouldLogParams) {
+                            let paramsList = buildParamLoggingList(p.node.params, relPathToFile, linenum, '');
+
+                            // Reverse the paramList, as we're unshifted from last parameter to first
+                            let reversedParamList = paramsList.reverse();
+
+                            for(const currParam of reversedParamList) {
+                                methodBlockBody.unshift(currParam);
+                            }
+                        }
+
                         methodBlockBody.unshift(
                             j.expressionStatement(
                                 j.callExpression(
@@ -49,7 +60,7 @@ module.exports = function(fileInfo, api, options) {
             })
     }
 
-    const addLoggingToFunctionDeclarations = (path, filepath) => {
+    const addLoggingToFunctionDeclarations = (path, filepath, shouldLogParams) => {
         path.find(j.FunctionDeclaration)
         .forEach(p => {
             let functionBlockBody = p.node.body.body;
@@ -58,6 +69,17 @@ module.exports = function(fileInfo, api, options) {
             const paramString = buildAnonymousParamsList(p.node.params);
             let relPathToFile = calculatedRelPath(filepath, relPath);
             let linenum = PRINT_LINE_NUMBERS ? `${getFunctionStartLineNumber(p)}:` : '';
+
+            if (shouldLogParams) {
+                let paramsList = buildParamLoggingList(p.node.params, relPathToFile, linenum, functionName);
+
+                // Reverse the paramList, as we're unshifted from last parameter to first
+                let reversedParamList = paramsList.reverse();
+
+                for(const currParam of reversedParamList) {
+                    functionBlockBody.unshift(currParam);
+                }
+            }
 
             functionBlockBody.unshift(
                 j.expressionStatement(
@@ -70,7 +92,7 @@ module.exports = function(fileInfo, api, options) {
         });
     }
 
-    const addLoggingToAnonymousFunctions = (path, filepath) => {
+    const addLoggingToAnonymousFunctions = (path, filepath, shouldLogParams) => {
         path.find(j.FunctionExpression)
         .forEach(p => {
             let functionBlockBody = p.node.body.body;
@@ -78,6 +100,17 @@ module.exports = function(fileInfo, api, options) {
             const paramString = buildAnonymousParamsList(p.node.params);
             let relPathToFile = calculatedRelPath(filepath, relPath);
             let linenum = PRINT_LINE_NUMBERS ? `${getFunctionStartLineNumber(p)}:` : '';
+
+            if (shouldLogParams) {
+                let paramsList = buildParamLoggingList(p.node.params, relPathToFile, linenum, '');
+
+                // Reverse the paramList, as we're unshifted from last parameter to first
+                let reversedParamList = paramsList.reverse();
+
+                for(const currParam of reversedParamList) {
+                    functionBlockBody.unshift(currParam);
+                }
+            }
 
             functionBlockBody.unshift(
                 j.expressionStatement(
@@ -90,7 +123,7 @@ module.exports = function(fileInfo, api, options) {
         });
     }
 
-    const addLoggingToArrowFunctions = (path, filepath) => {
+    const addLoggingToArrowFunctions = (path, filepath, shouldLogParams) => {
         path.find(j.ArrowFunctionExpression)
         .forEach(p => {
             const paramString = buildAnonymousParamsList(p.node.params);
@@ -107,6 +140,17 @@ module.exports = function(fileInfo, api, options) {
                 // }
 
                 if (Array.isArray(blockStatementBody)) {
+                    if (shouldLogParams) {
+                        let paramsList = buildParamLoggingList(p.node.params, relPathToFile, linenum, '');
+
+                        // Reverse the paramList, as we're unshifted from last parameter to first
+                        let reversedParamList = paramsList.reverse();
+
+                        for(const currParam of reversedParamList) {
+                            blockStatementBody.unshift(currParam);
+                        }
+                    }
+
                     blockStatementBody.unshift(
                         j.expressionStatement(
                             j.callExpression(
@@ -306,6 +350,38 @@ module.exports = function(fileInfo, api, options) {
     }
 
     /** @function
+     * @name @buildParamLoggingList
+     * @param { Object } paramNodes A list of parameter nodes
+     * @returns { Object } An array of nodes representing a console.log() node for each paraemter
+     */
+    const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName) => {
+        const returnExpressionNodes = [];
+        for (let index = 0; index < paramNodes.length; index++) {
+            let currentNode = paramNodes[index];
+
+            // This part is to deal with situations where we're handed a TypeScript parameter with a type annotion.
+            // If this is this case, then there's an additional "left" parent attribute that needs to be accessed
+            // e.g. 
+            let currentNodeName = _.get(currentNode, 'left.name', currentNode.name);
+        
+            let announcement = `${LIA_PREFIX}\t${relPathToFile}:${linenum}${functionName}:param ${currentNodeName} value:${LIA_SUFFIX} \n\t\t\t\t\t\t\t\t\t\t`;
+
+            let quasis = [
+                j.templateElement({cooked: announcement, raw: announcement }, true),
+            ];
+
+            let stringifyCallExpression = j.callExpression(j.identifier('JSON.stringify'), [ j.identifier(currentNodeName)]);
+            let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
+            let consoleCallExpression = j.callExpression(j.identifier('console.log'), [logTemplateLiteral]);        
+            let expressionStatement = j.expressionStatement(consoleCallExpression);
+
+            returnExpressionNodes.push(expressionStatement);        
+        }
+
+        return returnExpressionNodes;
+    }
+
+    /** @function
      * @name printRxjsPipeStageLogFunction
      * @param totalPipeParameters The total number of page parameters
      * @param pipeStageIndex The number value
@@ -320,7 +396,6 @@ module.exports = function(fileInfo, api, options) {
           }
      */
     const printRxjsPipeStageLogFunction = (totalPipeParameters, pipeStageIndex, pipeStartLineNumber, filepath) => {
-
         let announcement = '';
         let relPathToFile = calculatedRelPath(filepath, relPath);
 
@@ -420,12 +495,12 @@ module.exports = function(fileInfo, api, options) {
     }
 
     // MAIN SECTION
-    addLoggingToTSMethods(root, fileInfo.path);
-    addLoggingToFunctionDeclarations(root, fileInfo.path);
+    addLoggingToTSMethods(root, fileInfo.path, logParamsEnabled);
+    addLoggingToFunctionDeclarations(root, fileInfo.path, logParamsEnabled);
 
     if (!namedFunctionsOnly) {
-        addLoggingToArrowFunctions(root, fileInfo.path);
-        addLoggingToAnonymousFunctions(root, fileInfo.path);
+        addLoggingToArrowFunctions(root, fileInfo.path, logParamsEnabled);
+        addLoggingToAnonymousFunctions(root, fileInfo.path, logParamsEnabled);
         addLoggingToExpressionStatement(root, fileInfo.path);
         addLoggingToReturnStatement(root, fileInfo.path);
     }

@@ -22,6 +22,7 @@ Options:
                                 ignore
   --named-functions-only        only log non-anonymous functions and methods
   --rxjs                        support for adding logging to rxjs pipe stages
+  --params                      log values of function parameters
   -h, --help                    output usage information
 ```
 
@@ -71,6 +72,10 @@ When you run the code you should see in your debugging console/browser something
 > [logitall]  NumberAdder.ts:3:addTwoNumbers()
 > [logitall]  NumberAdder.ts:5
 ```
+
+#### Logging parameter values
+
+If you pass the __--params__ flag to logitall, the values of each parameter will included with the logging of the function call. Use sparingly as this option will generate a ton of extra data you'll have to sort through later.
 
 #### How to intepret the results
 
