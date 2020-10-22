@@ -4,6 +4,7 @@ const path = require('path');
 const child_process = require('child_process');
 const commander = require('commander');
 const chalk = require('chalk');
+const { command } = require('commander');
 
 commander
     .arguments('<filepath>')
@@ -12,6 +13,7 @@ commander
     .option('--ignore-config <configfile>', 'a .gitignore-style list of file patterns to ignore')
     .option('--named-functions-only', 'only log non-anonymous functions and methods')
     .option('--rxjs', 'support for adding logging to rxjs pipe stages')
+    .option('--params', 'log values of function parameters')
     .arguments('<filepath>')
     .parse(process.argv)
 
@@ -41,6 +43,10 @@ if (commander.namedFunctionsOnly) {
 
 if (commander.rxjs) {
     args.push('--rxjs');
+}
+
+if (commander.params) {
+    args.push('--params');
 }
 
 args.push(`--relpath=${commander.args[2]}`);
