@@ -13,6 +13,8 @@
     "logitall": "bin/logitall.js"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^5.16.0",
     "jest": "^25.5.4"
   },
   "dependencies": {
