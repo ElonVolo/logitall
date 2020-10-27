@@ -1,0 +1,3 @@
+function testLog(paramOne, paramTwo) {
+    
+}
