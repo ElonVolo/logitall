@@ -13,6 +13,13 @@ module.exports = function (fileInfo, api, options) {
   const LIA_SUFFIX = '';
   const PRINT_LINE_NUMBERS = true;
 
+  /** @function
+   * @name addLoggingToTSMethods
+   * @param {Object} jscodeshift node-path
+   * @param {string} filepath The path to the file being transformed
+   * @param {boolean} shouldLogParams Set to true to log function parameters
+   * @description Adds logging to typescript methods, including constructors
+   */
   const addLoggingToTSMethods = (path, filepath, shouldLogParams) => {
     path.find(j.ClassMethod)
       .forEach(p => {
@@ -60,6 +67,13 @@ module.exports = function (fileInfo, api, options) {
       })
   }
 
+  /** @function
+   * @name addLoggingToFunctionDeclarations
+   * @param {Object} jscodeshift node-path
+   * @param {string} filepath The path to the file being transformed
+   * @param {boolean} shouldLogParams Set to true to log function parameters
+   * @description Adds logging to officially declared functions
+   */
   const addLoggingToFunctionDeclarations = (path, filepath, shouldLogParams) => {
     path.find(j.FunctionDeclaration)
       .forEach(p => {
@@ -92,6 +106,13 @@ module.exports = function (fileInfo, api, options) {
       });
   }
 
+  /** @function
+   * @name addLoggingToAnonymousFunctions
+   * @param {Object} jscodeshift node-path
+   * @param {string} filepath The path to the file being transformed
+   * @param {boolean} shouldLogParams Set to true to log function parameters
+   * @description Adds logging to anonymous functions
+   */
   const addLoggingToAnonymousFunctions = (path, filepath, shouldLogParams) => {
     path.find(j.FunctionExpression)
       .forEach(p => {
@@ -123,6 +144,13 @@ module.exports = function (fileInfo, api, options) {
       });
   }
 
+  /** @function
+   * @name addLoggingToArrowFunctions
+   * @param {Object} jscodeshift node-path
+   * @param {string} filepath The path to the file being transformed
+   * @param {boolean} shouldLogParams Set to true to log function parameters
+   * @description Adds logging to fat arrow functions
+   */
   const addLoggingToArrowFunctions = (path, filepath, shouldLogParams) => {
     path.find(j.ArrowFunctionExpression)
       .forEach(p => {
@@ -177,6 +205,12 @@ module.exports = function (fileInfo, api, options) {
       });
   }
 
+  /** @function
+   * @name addLoggingToReturnStatement
+   * @param {Object} jscodeshift node-path
+   * @param {string} filepath The path to the file being transformed
+   * @description Adds a logging line before each seperate statement line
+   */
   const addLoggingToExpressionStatement = (path, filepath) => {
     path.find(j.ExpressionStatement)
       .forEach(p => {
@@ -224,6 +258,12 @@ module.exports = function (fileInfo, api, options) {
       })
   }
 
+  /** @function
+   * @name addLoggingToReturnStatement
+   * @param {Object} jscodeshift node-path
+   * @param {string} filepath The path to the file being transformed
+   * @description Adds a logging line before a return statement
+   */
   const addLoggingToReturnStatement = (path, filepath) => {
     path.find(j.ReturnStatement)
       .forEach(p => {
@@ -249,6 +289,12 @@ module.exports = function (fileInfo, api, options) {
       })
   }
 
+  /** @function
+   * @name addLoggingToRxjsPipes
+   * @param {Object} jscodeshift node-path
+   * @param {string} filepath The path to the file being transformed
+   * @description Adds logging statements before and after each rxjs pipe stage.
+   */
   const addLoggingToRxjsPipes = (path, filepath) => {
     let pipeStatementFound = false;
 
@@ -467,13 +513,13 @@ module.exports = function (fileInfo, api, options) {
 
   /** @function
    * @name findTapImport
-   * @param theNode A jscodeshift node
+   * @param path A jscodeshift node
    * @returns {boolean} Flag whether there's an existing rxjs tap operator
    *
    * This function is used as a filter function on ImportDeclaration nodes
    * to find out whether the ImportDeclaration imports the rxjs tap operator
   */
-  const findTapImport = (path, filepath) => {
+  const findTapImport = (path) => {
     let tapImportExists = false;
     path.find(j.ImportDeclaration)
       .forEach(p => {
