@@ -13,8 +13,6 @@ module.exports = function (fileInfo, api, options) {
   const rxjsSupport = options['rxjs'];
   const logParamsEnabled = options['params'];
 
-  const LIA_PREFIX = '[logitall]  ';
-  const LIA_SUFFIX = '';
   const PRINT_LINE_NUMBERS = true;
 
   /** @function
@@ -37,15 +35,11 @@ module.exports = function (fileInfo, api, options) {
         // Check for super() call
         if (methodBlockBody.length > 0) {
           let hasSuperCall = utils.hasSuper(methodBlockBody[0]);
+
           if (hasSuperCall) {
-            methodBlockBody.splice(1, 0,
-              j.expressionStatement(
-                j.callExpression(
-                  j.identifier('console.log'),
-                  [j.literal(`${LIA_PREFIX}${relPathToFile}:${linenum}${methodName}()${LIA_SUFFIX}`)]
-                )
-              )
-            )
+            let logString = `${relPathToFile}:${linenum}${methodName}()`;
+            let logStatement = utils.buildConsoleLogExpressionStatement(logString);
+            methodBlockBody.splice(1, 0, logStatement);
           } else {
             if (shouldLogParams) {
               let paramsList = utils.buildParamLoggingList(p.node.params, relPathToFile, linenum, '');
@@ -58,14 +52,9 @@ module.exports = function (fileInfo, api, options) {
               }
             }
 
-            methodBlockBody.unshift(
-              j.expressionStatement(
-                j.callExpression(
-                  j.identifier('console.log'),
-                  [j.literal(`${LIA_PREFIX}${relPathToFile}:${linenum}${methodName}()${LIA_SUFFIX}`)]
-                )
-              )
-            )
+            let logString = `${relPathToFile}:${linenum}${methodName}()`;
+            let logStatement = utils.buildConsoleLogExpressionStatement(logString);
+            methodBlockBody.unshift(logStatement);
           }
         }
       })
@@ -99,14 +88,9 @@ module.exports = function (fileInfo, api, options) {
           }
         }
 
-        functionBlockBody.unshift(
-          j.expressionStatement(
-            j.callExpression(
-              j.identifier('console.log'),
-              [j.literal(`${LIA_PREFIX}${relPathToFile}:${linenum}${functionName}${paramString}${LIA_SUFFIX}`)]
-            )
-          )
-        );
+        let logString = `${relPathToFile}:${linenum}${functionName}${paramString}`;
+        let logStatement = utils.buildConsoleLogExpressionStatement(logString);
+        functionBlockBody.unshift(logStatement);
       });
   }
 
@@ -137,14 +121,9 @@ module.exports = function (fileInfo, api, options) {
           }
         }
 
-        functionBlockBody.unshift(
-          j.expressionStatement(
-            j.callExpression(
-              j.identifier('console.log'),
-              [j.literal(`${LIA_PREFIX}${relPathToFile}:${linenum}function${paramString}${LIA_SUFFIX}`)]
-            )
-          )
-        )
+        let logString = `${relPathToFile}:${linenum}function${paramString}`;
+        let logStatement = utils.buildConsoleLogExpressionStatement(logString);
+        functionBlockBody.unshift(logStatement);
       });
   }
 
@@ -183,14 +162,9 @@ module.exports = function (fileInfo, api, options) {
               }
             }
 
-            blockStatementBody.unshift(
-              j.expressionStatement(
-                j.callExpression(
-                  j.identifier('console.log'),
-                  [j.literal(`${LIA_PREFIX}${relPathToFile}:${linenum}${paramString} => {}${LIA_SUFFIX}`)]
-                )
-              )
-            )
+            let logString = `${relPathToFile}:${linenum}${paramString} => {}`;
+            let logStatement = utils.buildConsoleLogExpressionStatement(logString);
+            blockStatementBody.unshift(logStatement);
           }
         } else if (_.get(p, 'node.body', false)) {
           // TODO: fix the handling for single line arrow functions
@@ -251,14 +225,9 @@ module.exports = function (fileInfo, api, options) {
         let relPathToFile = utils.calculatedRelPath(filepath, relPath);
         let linenum = PRINT_LINE_NUMBERS ? `${p.node.loc.start.line}` : '';
 
-        p.insertBefore(
-          j.expressionStatement(
-            j.callExpression(
-              j.identifier('console.log'),
-              [j.literal(`${LIA_PREFIX}${relPathToFile}:${linenum}${LIA_SUFFIX}`)]
-            )
-          )
-        );
+        let logString = `${relPathToFile}:${linenum}`;
+        let logStatement = utils.buildConsoleLogExpressionStatement(logString);
+        p.insertBefore(logStatement);
       })
   }
 
@@ -282,15 +251,10 @@ module.exports = function (fileInfo, api, options) {
         let relPathToFile = utils.calculatedRelPath(filepath, relPath);
         let linenum = PRINT_LINE_NUMBERS ? `${p.node.loc.start.line}` : '';
 
-        p.insertBefore(
-          j.expressionStatement(
-            j.callExpression(
-              j.identifier('console.log'),
-              [j.literal(`${LIA_PREFIX}${relPathToFile}:${linenum}${LIA_SUFFIX}`)]
-            )
-          )
-        );
-      })
+        let logString = `${relPathToFile}:${linenum}`;
+        let logStatement = utils.buildConsoleLogExpressionStatement(logString);
+        p.insertBefore(logStatement);
+      });
   }
 
   /** @function

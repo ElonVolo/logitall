@@ -6,6 +6,25 @@ const j = require('jscodeshift');
 const LIA_PREFIX = '[logitall]  ';
 const LIA_SUFFIX = '';
 
+
+/**
+ * @name buildConsoleLogExpressionStatement
+ * @param {string} logString
+ * @returns {Object} A jscodeshift ExpressionStatement node
+ * @description This is a convenience method to generate console log expresssions
+ */
+const buildConsoleLogExpressionStatement = (logString) => {
+  const expressionStatement = j.expressionStatement(
+    j.callExpression(
+      j.identifier('console.log'),
+      [j.literal(`${LIA_PREFIX}${logString}${LIA_SUFFIX}`)]
+    )
+  );
+
+  return expressionStatement;
+}
+exports.buildConsoleLogExpressionStatement = buildConsoleLogExpressionStatement;
+
 /** @function
  * @name buildAnonymousParamsList
  * @param A list of parameter nodes
