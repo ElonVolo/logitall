@@ -71,7 +71,18 @@ module.exports = function (fileInfo, api, options) {
     path.find(j.FunctionDeclaration)
       .forEach(p => {
         let functionBlockBody = p.node.body.body;
-        let functionName = p.node.id.name;
+
+        // Please note that the form
+
+        //  export default function (whateverParams)
+        //
+        // "which you'll usually find (only?) inTypeScript, will be interpreted as a FunctionDeclaration, even
+        // though for all intents and purposes it has the same basic namability as an anonymous function.
+        // But for the sake of convention, for right now we'll handle a default exported function by simply
+        // using the name "function" if the function doesn't actually have a name. There's probably an argument to
+        // be made for creating an explicit (addLoggingToExportedDefaultFunctionDeclarations) transformation function
+        // at some point in the future.
+        let functionName = _.get(p, 'node.id.name', 'function');
 
         const paramString = utils.buildAnonymousParamsList(p.node.params);
         let relPathToFile = utils.calculatedRelPath(filepath, relPath);
