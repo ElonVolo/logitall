@@ -14,16 +14,16 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^5.16.0",
-    "jest": "^25.5.4"
+    "eslint": "^7.18.0",
+    "jest": "^26.6.3"
   },
   "dependencies": {
-    "chalk": "^3.0.0",
-    "commander": "^4.1.1",
-    "jscodeshift": "^0.7.0",
+    "chalk": "^4.1.0",
+    "commander": "^7.0.0",
+    "jscodeshift": "^0.11.0",
     "jscodeshift-helper": "^1.1.0",
-    "lodash": "^4.17.19",
-    "node": "^14.0.0"
+    "lodash": "^4.17.20",
+    "node": "^15.4.0"
   },
   "keywords": [
     "console.log",
