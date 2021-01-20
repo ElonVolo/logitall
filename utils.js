@@ -111,7 +111,7 @@ const printRxjsPipeStageLogFunction = (totalPipeParameters, pipeStageIndex, pipe
     j.templateElement({ cooked: '\\n', raw: '\\n' }, true)
   ];
 
-  let expressions = [j.identifier('x')];
+  let expressions = [j.callExpression(j.identifier('JSON.stringify'), [j.identifier('x')])];
   let logTemplateLiteral = j.templateLiteral(quasis, expressions);
 
   let expressionStatement = j.expressionStatement(j.callExpression(j.identifier('console.log'), [logTemplateLiteral]))
