@@ -30,21 +30,23 @@ if (commander.args.length === 0) {
 let parentDir = require('path').resolve(__dirname, '..');
 let jsc = path.join(parentDir, 'node_modules', 'jscodeshift', 'bin', 'jscodeshift.js');
 let transformPath = path.join(parentDir, 'transform.js');
-let args = [jsc, '-t', transformPath, '--extensions=ts', '--parser=ts', commander.args[0], '--verbose=2'];
+let args = [jsc, '-t', transformPath, '--extensions=ts,js', '--parser=ts', commander.args[0], '--verbose=2'];
 
-if (commander.ignoreConfig) {
-  args.push(`--ignore-config=${commander.ignoreConfig}`);
+let passedOptions = commander.opts();
+
+if (passedOptions.ignoreConfig) {
+  args.push(`--ignore-config=${passedOptions.ignoreConfig}`);
 }
 
-if (commander.namedFunctionsOnly) {
+if (passedOptions.namedFunctionsOnly) {
   args.push('--named-functions-only');
 }
 
-if (commander.rxjs) {
+if (passedOptions.rxjs) {
   args.push('--rxjs');
 }
 
-if (commander.params) {
+if (passedOptions.params) {
   args.push('--params');
 }
 
