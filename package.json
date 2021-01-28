@@ -1,6 +1,6 @@
 {
   "name": "logitall",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "A program for making your code console.log() everything. logitall logs it all.",
   "main": "index.js",
   "repository": "https://github.com/elonvolo/logitall.git",
