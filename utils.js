@@ -6,6 +6,7 @@ const j = require('jscodeshift');
 const LIA_PREFIX = '[logitall]  ';
 const LIA_SUFFIX = '';
 
+ var describe = require('jscodeshift-helper').describe;
 
 /**
  * @name buildConsoleLogExpressionStatement
@@ -60,6 +61,16 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
     // If this is this case, then there's an additional "left" parent attribute that needs to be accessed
     // e.g.
     let currentNodeName = _.get(currentNode, 'left.name', currentNode.name);
+
+    // Fix for situation where Babel does something weird and parses ts constructor function
+    // parameters as TSParameterProperty node if there's an access modifier (private, public, etc)
+
+    // Babel turn sconstructor(myVar:number) parameter node into an Identifier node
+    // Baben turns consturctor(private myVar:number) parameter node into a TSParameterProperty node
+    if (!currentNodeName && currentNode.type === 'TSParameterProperty') {
+      // The solution is to get TSParameterProperty.paramter.name
+      currentNodeName = currentNode.parameter.name;
+    }
 
     let announcement = `${LIA_PREFIX}\t${relPathToFile}:${linenum}${functionName}:param ${currentNodeName} value:${LIA_SUFFIX} \n\t\t\t\t\t\t\t\t\t\t`;
 
