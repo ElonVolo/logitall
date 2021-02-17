@@ -8,6 +8,7 @@ defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'para
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'function-declaration', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'function-declaration-export-default-function', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true }, 'function-declaration-logparams', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true }, 'function-rest-parameter', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'function-return', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'method-constructor', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params': true }, 'method-constructor-logparams', { 'parser': 'ts' });

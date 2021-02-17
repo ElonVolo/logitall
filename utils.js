@@ -35,7 +35,18 @@ const buildAnonymousParamsList = (paramNodes) => {
   let paramString = '(';
 
   for (let index = 0; index < paramNodes.length; index++) {
-    paramString = paramString + paramNodes[index].name;
+    let currentNode = paramNodes[index];
+    let currentNodeName;
+
+    if (!currentNode.name && currentNode.type === 'RestElement') {
+      // The solution is to descend into the RestElement and get the child identifier
+      currentNodeName = '...' + currentNode.argument.name;
+    } else {
+      currentNodeName = currentNode.name;
+    }
+
+    // Deal with situations where there's a rest element
+    paramString = paramString + currentNodeName;
 
     if (index !== (paramNodes.length - 1)) {
       paramString = paramString + ', ';
@@ -70,6 +81,16 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
     if (!currentNodeName && currentNode.type === 'TSParameterProperty') {
       // The solution is to get TSParameterProperty.paramter.name
       currentNodeName = currentNode.parameter.name;
+    }
+
+    // If we have a rest parameter (i.e. a ...myParamName in the following:
+    //  function doStuff(...myParamName) {
+    //
+    //  }
+    // Then Babel will end up putting a RestElement in the params[] array,
+    if (!currentNodeName && currentNode.type === 'RestElement') {
+      // The solution is to descend into the RestElement and get the child identifier
+      currentNodeName = currentNode.argument.name;
     }
 
     let announcement = `${LIA_PREFIX}\t${relPathToFile}:${linenum}${functionName}:param ${currentNodeName} value:${LIA_SUFFIX} \n\t\t\t\t\t\t\t\t\t\t`;
