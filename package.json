@@ -22,7 +22,7 @@
     "commander": "^7.1.0",
     "jscodeshift": "^0.11.0",
     "jscodeshift-helper": "^1.1.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "node": "^15.8.0"
   },
   "keywords": [
