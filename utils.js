@@ -76,6 +76,16 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
     // Fix for situation where Babel does something weird and parses ts constructor function
     // parameters as TSParameterProperty node if there's an access modifier (private, public, etc)
 
+    // I honestly don't know what I was doing here or what was the goal, but this
+    // is probably important enough that I'm going to leave it in here until it
+    // comes up again. This is just to give me some sort of context for when I
+    // am trying to solve the problem that I was trying to solve previously,
+    // that again, I don't remember what was
+    // if (currentNode.type == 'ObjectPattern') {
+    //   return 1;
+    // }
+
+
     // Babel turn sconstructor(myVar:number) parameter node into an Identifier node
     // Baben turns consturctor(private myVar:number) parameter node into a TSParameterProperty node
     if (!currentNodeName && currentNode.type === 'TSParameterProperty') {
@@ -231,3 +241,8 @@ const findTapImport = (path) => {
   return tapImportExists;
 }
 exports.findTapImport = findTapImport;
+
+// Private functions
+const objectPatternName = (node) => {
+
+}
