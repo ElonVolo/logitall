@@ -10,6 +10,8 @@ defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'fun
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true }, 'function-declaration-logparams', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true }, 'function-rest-parameter', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'function-return', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'function-return-nonbrace-if', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'function-return-nonbrace-for', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'method-constructor', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params': true }, 'method-constructor-logparams', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params': true }, 'method-constructor-logparams-access-modifier', { 'parser': 'ts' });
@@ -18,6 +20,8 @@ defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'para
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'method-static', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true }, 'method-static-logparams', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'statement-expression', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'statement-expression-nonbrace-if', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__'}, 'statement-expression-nonbrace-for', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'rxjs' : true }, 'rxjs-basic', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'rxjs' : true }, 'rxjs-basic-existing-tap-import', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'rxjs' : true } , 'rxjs-internal-tap-import', { 'parser': 'ts' });

@@ -6,7 +6,8 @@ const j = require('jscodeshift');
 const LIA_PREFIX = '[logitall]  ';
 const LIA_SUFFIX = '';
 
- var describe = require('jscodeshift-helper').describe;
+// leaving below describe in here for future easy troubleshooting
+// var describe = require('jscodeshift-helper').describe;
 
 /**
  * @name buildConsoleLogExpressionStatement
@@ -113,7 +114,6 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
     let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
     let consoleCallExpression = j.callExpression(j.identifier('console.log'), [logTemplateLiteral]);
     let expressionStatement = j.expressionStatement(consoleCallExpression);
-
     returnExpressionNodes.push(expressionStatement);
   }
 

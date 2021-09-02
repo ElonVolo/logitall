@@ -224,12 +224,20 @@ module.exports = function (fileInfo, api, options) {
           }
         }
 
-        // Skip instances where the expression statement is the consequent of an if statment
-        // where the braces have been omitted
-        // if (foo === 5)
-        //     bar = baz;
+        // Skip instances where:
+        // 1. The expression statement is the consequent of an if statment where the braces have been omitted
+        //
+        //    if (thing.foo === bar) 
+        //      alert('Hello world!');
+        //
+        // 2. The return statement is the body of a for loop
+        //  
+        //    for (let i = 0; i < 100; i++) 
+        //      alert('Hello world!'); 
+        //
         let nodeType = _.get(p, 'parent.node.type', '');
-        if (nodeType === 'IfStatement') {
+        if (nodeType === 'IfStatement' || 
+            nodeType === 'ForStatement') {
           return;
         }
 
@@ -251,11 +259,21 @@ module.exports = function (fileInfo, api, options) {
   const addLoggingToReturnStatement = (path, filepath) => {
     path.find(j.ReturnStatement)
       .forEach(p => {
-        // Skip instances where the return statement is the consequent of an if statment
-        // where the braces have been omitted
-        // if (thing.foo === bar) return thing
+        // Skip instances where:
+        // 1. The return statement is the consequent of an if statment where the braces have been omitted
+        //
+        //    if (thing.foo === bar) 
+        //      return thing
+        //
+        // 2. The return statement is the body of a for loop
+        //  
+        //    for (let i = 0; i < 100; i++) 
+        //      return whatever  
+        //
+
         let nodeType = _.get(p, 'parent.node.type', '');
-        if (nodeType === 'IfStatement') {
+        if (nodeType === 'IfStatement' ||
+            nodeType === 'ForStatement') {
           return;
         }
 
