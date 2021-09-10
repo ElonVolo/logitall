@@ -2,6 +2,9 @@
 
 const _ = require('lodash');
 const j = require('jscodeshift');
+const fs = require('fs');
+const path = require('path');
+const esbuild = require('esbuild');
 
 const LIA_PREFIX = '[logitall]  ';
 const LIA_SUFFIX = '';
@@ -110,8 +113,18 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
       j.templateElement({ cooked: announcement, raw: announcement }, true),
     ];
 
-    let stringifyCallExpression = j.callExpression(j.identifier('JSON.stringify'), [j.identifier(currentNodeName)]);
+    // The below call expressions gives us "decycle(foo)""
+    let decycleExp = j.callExpression(j.identifier('decycle'), [j.identifier(currentNodeName)]);
+
+    // The below call expressions gives us "JSON.stringify(decycle(foo))"
+    let stringifyCallExpression = 
+      j.callExpression(j.identifier('JSON.stringify'), [decycleExp]);
+
+    // The below gives us something like
+    //   `[logitall]  	__testfixtures__/function-anonymous-logparams.input.ts:1::param paramOne value: 
+    //     ${JSON.stringify(decycle(paramOne))}`
     let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
+
     let consoleCallExpression = j.callExpression(j.identifier('console.log'), [logTemplateLiteral]);
     let expressionStatement = j.expressionStatement(consoleCallExpression);
     returnExpressionNodes.push(expressionStatement);
@@ -153,8 +166,12 @@ const printRxjsPipeStageLogFunction = (totalPipeParameters, pipeStageIndex, pipe
     j.templateElement({ cooked: '\\n', raw: '\\n' }, true)
   ];
 
-  let expressions = [j.callExpression(j.identifier('JSON.stringify'), [j.identifier('x')])];
-  let logTemplateLiteral = j.templateLiteral(quasis, expressions);
+  let decycleExp = j.callExpression(j.identifier('decycle'), [j.identifier('x')]);
+
+  let stringifyCallExpression 
+    = j.callExpression(j.identifier('JSON.stringify'), [decycleExp]);
+
+  let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
 
   let expressionStatement = j.expressionStatement(j.callExpression(j.identifier('console.log'), [logTemplateLiteral]))
   let arrowFunction = j.arrowFunctionExpression([j.identifier('x')],
@@ -242,7 +259,44 @@ const findTapImport = (path) => {
 }
 exports.findTapImport = findTapImport;
 
-// Private functions
-const objectPatternName = (node) => {
+/** @function
+ * @name circularRefHandlerCode
+ * This function returns a string with code that needs
+ * to be added at the top of a source code file to deal with
+ * any circularly references that JSON.stringify could get
+ * held up on
+*/
+const circularRefHandlerCode = () => {
+  // The secret of how this code below works.
+  //
+  // We go into node_modules/json-cycle/cycle.js and do a jscodeshift
+  // find on the decycle() function, then we grab it and minify it and inject
+  // the result of that into our codemod program
+  
+  // Get the AST node for decycle()
+  let cyclePath = path.join(__dirname, 'node_modules/json-cycle/cycle.js');
+  let cycleCodeString = fs.readFileSync(cyclePath, 'utf-8');
+  let cycleRoot = j(cycleCodeString);
+  let decycleFunction = cycleRoot.find(j.FunctionDeclaration, { 'id' : {'name' : 'decycle'}});
+  let decycleFunctionNode = (decycleFunction.get(0)).node;
 
+  // Now make a new standalone chunk of code from the decycle() function
+  // and minify that so it can be prepended to code at the top of the file
+  const newCode = j('');
+  let newProgram = newCode.find('Program');
+  let newNodePath = newProgram.get(0).node;
+  newNodePath.body.push(decycleFunctionNode);
+  let newSource =  newCode.toSource({quote:'single'});
+
+  let transformed = esbuild.transformSync(newSource,{
+    minify: true,
+  });
+
+  // Add a ts-ignore to prevent TypeScript about complaining
+  let tsIgnored = '// @ts-ignore\n';
+
+  let decycleCode = transformed['code'];
+  let fullCode = tsIgnored + decycleCode + '\n';
+  return fullCode;
 }
+exports.circularRefHandlerCode = circularRefHandlerCode;

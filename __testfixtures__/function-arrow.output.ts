@@ -1,3 +1,3 @@
 let testLog = () => {
-  console.log("[logitall]  __testfixtures__/function-arrow.input.ts:1:() => {}");
+  console.log('[logitall]  __testfixtures__/function-arrow.input.ts:1:() => {}');
 };
