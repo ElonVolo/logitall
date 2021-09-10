@@ -230,14 +230,19 @@ module.exports = function (fileInfo, api, options) {
         //    if (thing.foo === bar) 
         //      alert('Hello world!');
         //
-        // 2. The return statement is the body of a for loop
+        // 2. The return statement is the body of a for, for-in, for-of loop
         //  
         //    for (let i = 0; i < 100; i++) 
         //      alert('Hello world!'); 
         //
         let nodeType = _.get(p, 'parent.node.type', '');
         if (nodeType === 'IfStatement' || 
-            nodeType === 'ForStatement') {
+            nodeType === 'ForStatement' ||
+            nodeType === 'ForInStatement' ||
+            nodeType === 'ForOfStatement' ||
+            nodeType === 'WhileStatement' ||
+            nodeType === 'DoWhileStatement'
+            ) {
           return;
         }
 
@@ -265,15 +270,20 @@ module.exports = function (fileInfo, api, options) {
         //    if (thing.foo === bar) 
         //      return thing
         //
-        // 2. The return statement is the body of a for loop
+        // 2. The return statement is the body of a for, for-in, for-of loop
         //  
         //    for (let i = 0; i < 100; i++) 
         //      return whatever  
         //
 
         let nodeType = _.get(p, 'parent.node.type', '');
+        console.log(nodeType);
         if (nodeType === 'IfStatement' ||
-            nodeType === 'ForStatement') {
+            nodeType === 'ForStatement' ||
+            nodeType === 'ForInStatement' ||
+            nodeType === 'ForOfStatement' ||
+            nodeType === 'WhileStatement' ||
+            nodeType === 'DoWhileStatement') {
           return;
         }
 
@@ -385,5 +395,16 @@ module.exports = function (fileInfo, api, options) {
     addLoggingToRxjsPipes(root, fileInfo.path);
   }
 
-  return root.toSource();
+  let rootSource = root.toSource({quote:'single'});
+
+  // If logging of function parameters has been turned on, then put an escaper function at the top of
+  // each file. We can refine this strategy and make it smarter as we move forward. In other works,
+  // this will happen to every JavaScript file regards of platform, and we can refine and optimize over time
+  if (logParamsEnabled || rxjsSupport) {
+    let circularReferenceHandlerHeader = utils.circularRefHandlerCode();
+    console.log(circularReferenceHandlerHeader);
+    rootSource = circularReferenceHandlerHeader + rootSource;
+  }
+
+  return rootSource;
 }

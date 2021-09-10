@@ -1,5 +1,5 @@
 class BaseClass {
-    
+
     public items:number[];
 
     constructor(paramOne:number, paramTwo:number) {

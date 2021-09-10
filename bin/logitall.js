@@ -6,7 +6,6 @@ const commander = require('commander');
 const chalk = require('chalk');
 
 commander
-  .arguments('<filepath>')
   .name('logitall')
   .usage('(filepath | dirpath)')
   .option('--ignore-config <configfile>', 'a .gitignore-style list of file patterns to ignore')

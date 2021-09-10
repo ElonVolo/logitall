@@ -1,0 +1,2 @@
+while (!scope.isGlobal)
+    return;
