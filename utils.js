@@ -63,6 +63,39 @@ const buildAnonymousParamsList = (paramNodes) => {
 exports.buildAnonymousParamsList = buildAnonymousParamsList;
 
 /** @function
+ * @name buildParamLoggingStatement
+ * @param { String } parameterName The name of the variable
+ * @param { String } relPathToFile The relative path to the file
+ * @param { String } linenum The line number
+ * @param { String } functionName The name of the function being logged.
+ * @returns { Object } An expression object that translates into console.logging the parameter name and value
+ * @description Convenience function that does the heavy lifting of creating the expression that console.logs the parameter name and value
+ */
+ const buildParamLoggingStatement = (parameterName, relPathToFile, linenum, functionName) => {
+  let announcement = `${LIA_PREFIX}\t${relPathToFile}:${linenum}${functionName}:param ${parameterName} value:${LIA_SUFFIX} \n\t\t\t\t\t\t\t\t\t\t`;
+
+  let quasis = [
+    j.templateElement({ cooked: announcement, raw: announcement }, true),
+  ];
+
+  // The below call expressions gives us "decycle(foo)""
+  let decycleExp = j.callExpression(j.identifier('decycle'), [j.identifier(parameterName)]);
+
+  // The below call expressions gives us "JSON.stringify(decycle(foo))"
+  let stringifyCallExpression = 
+    j.callExpression(j.identifier('JSON.stringify'), [decycleExp]);
+
+  // The below gives us something like
+  //   `[logitall]  	__testfixtures__/function-anonymous-logparams.input.ts:1::param paramOne value: 
+  //     ${JSON.stringify(decycle(paramOne))}`
+  let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
+
+  let consoleCallExpression = j.callExpression(j.identifier('console.log'), [logTemplateLiteral]);
+  let expressionStatement = j.expressionStatement(consoleCallExpression);
+  return expressionStatement;
+}
+
+/** @function
  * @name @buildParamLoggingList
  * @param { Object } paramNodes A list of parameter nodes
  * @returns { Object } An array of nodes representing a console.log() node for each paraemter
@@ -107,32 +140,14 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
       currentNodeName = currentNode.argument.name;
     }
 
-    let announcement = `${LIA_PREFIX}\t${relPathToFile}:${linenum}${functionName}:param ${currentNodeName} value:${LIA_SUFFIX} \n\t\t\t\t\t\t\t\t\t\t`;
-
-    let quasis = [
-      j.templateElement({ cooked: announcement, raw: announcement }, true),
-    ];
-
-    // The below call expressions gives us "decycle(foo)""
-    let decycleExp = j.callExpression(j.identifier('decycle'), [j.identifier(currentNodeName)]);
-
-    // The below call expressions gives us "JSON.stringify(decycle(foo))"
-    let stringifyCallExpression = 
-      j.callExpression(j.identifier('JSON.stringify'), [decycleExp]);
-
-    // The below gives us something like
-    //   `[logitall]  	__testfixtures__/function-anonymous-logparams.input.ts:1::param paramOne value: 
-    //     ${JSON.stringify(decycle(paramOne))}`
-    let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
-
-    let consoleCallExpression = j.callExpression(j.identifier('console.log'), [logTemplateLiteral]);
-    let expressionStatement = j.expressionStatement(consoleCallExpression);
-    returnExpressionNodes.push(expressionStatement);
+    let paramLoggingStatement = buildParamLoggingStatement(currentNodeName, relPathToFile, linenum, functionName);    
+    returnExpressionNodes.push(paramLoggingStatement);
   }
 
   return returnExpressionNodes;
 }
 exports.buildParamLoggingList = buildParamLoggingList;
+
 
 /** @function
  * @name printRxjsPipeStageLogFunction
