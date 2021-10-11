@@ -8,6 +8,9 @@ defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'para
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true}, 'function-declaration', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true}, 'function-declaration-export-default-function', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true, '--fail-on-error' : true }, 'function-declaration-logparams', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true, '--fail-on-error' : true }, 'function-declaration-logparams-destructure-objectpattern', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true, '--fail-on-error' : true }, 'function-declaration-logparams-destructure-objectpattern-default-values', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true, '--fail-on-error' : true }, 'function-declaration-logparams-destructure-objectpattern-rename-extracted-values', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true, '--fail-on-error' : true }, 'function-rest-parameter', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true}, 'function-return', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true}, 'function-return-nonbrace-if', { 'parser': 'ts' });
