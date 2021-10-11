@@ -145,8 +145,24 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
     // Babel parses the function parameter node into a TSParameterProperty node
     // So in that case we need to dig one level deeper to get the name of the parameter.
     if (!currentNodeName && currentNode.type === 'TSParameterProperty') {
-      // The solution is to get TSParameterProperty.paramter.name
-      currentNodeName = currentNode.parameter.name;
+      // The solution is to get TSParameterProperty.paramter.name or some variation of that
+
+      // Check to see if this is TypeScript with an assigment, e.g.
+      // export class HttpHandler {
+
+      //   constructor(
+      //     protected routes = 5,
+      //   ) {
+      //     let q = 5;
+      //   }
+      // }
+      // 
+      // If so, then go get routes we need to do theTypeScriptNode.parameter.left.name;
+      if (currentNode.parameter.type == 'AssignmentPattern') {
+        currentNodeName = currentNode.parameter.left.name;
+      } else {
+        currentNodeName = currentNode.parameter.name;
+      }
     }
 
     if (currentNode.type == 'ObjectPattern') {

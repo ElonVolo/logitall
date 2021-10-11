@@ -20,6 +20,7 @@ defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fa
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true}, 'method-constructor', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params': true, '--fail-on-error' : true }, 'method-constructor-logparams', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params': true, '--fail-on-error' : true}, 'method-constructor-logparams-access-modifier', { 'parser': 'ts' });
+defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params': true, '--fail-on-error' : true}, 'method-constructor-logparams-access-modifier-default-param', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true}, 'method-instance', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true, '--fail-on-error' : true}, 'method-instance-logparams', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true }, 'method-static', { 'parser': 'ts' });
