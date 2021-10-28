@@ -19,11 +19,11 @@
   },
   "dependencies": {
     "chalk": "^5.0.0",
-    "json-cycle": "^1.3.0",
     "commander": "^9.0.0",
     "esbuild": "^0.14.23",
-    "jscodeshift": "^0.13.1",
+    "evcodeshift": "^2.3.0",
     "jscodeshift-helper": "^1.1.0",
+    "json-cycle": "^1.3.0",
     "lodash": "^4.17.21",
     "node": "^17.4.0"
   },
