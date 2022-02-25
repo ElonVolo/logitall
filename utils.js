@@ -31,18 +31,35 @@ const buildConsoleLogExpressionStatement = (logString) => {
 exports.buildConsoleLogExpressionStatement = buildConsoleLogExpressionStatement;
 
 /** @function
- * @name buildAnonymousParamsList
+ * @name buildParamsListString
  * @param A list of parameter nodes
  * @returns {string} A string representation of function parameters
  */
-const buildAnonymousParamsList = (paramNodes) => {
+const buildParamsListString = (paramNodes) => {
   let paramString = '(';
 
   for (let index = 0; index < paramNodes.length; index++) {
     let currentNode = paramNodes[index];
     let currentNodeName;
 
-    if (!currentNode.name && currentNode.type === 'RestElement') {
+    // If the first parameter is a destructured object (aka ObjectPattern)
+    // i.e. { bunny, bubba, babushka } in 
+    if (currentNode.type === 'ObjectPattern') {
+      let propertiesString = '{';
+      if (currentNode.properties.length > 0) {
+        for (let propertyIndex = 0; propertyIndex < currentNode.properties.length; propertyIndex++) {
+          let currentProperty = currentNode.properties[propertyIndex];
+          propertiesString = propertiesString + currentProperty.key.name;
+          if (propertyIndex < (currentNode.properties.length - 1)) {
+            propertiesString = propertiesString + ', ';
+          }
+        }
+      }
+
+      propertiesString = propertiesString += '}';
+      currentNodeName = propertiesString;
+      // paramString = paramString + propertiesString;
+    } else if (!currentNode.name && currentNode.type === 'RestElement') {
       // The solution is to descend into the RestElement and get the child identifier
       currentNodeName = '...' + currentNode.argument.name;
     } else {
@@ -52,6 +69,7 @@ const buildAnonymousParamsList = (paramNodes) => {
     // Deal with situations where there's a rest element
     paramString = paramString + currentNodeName;
 
+    // append a command and space if we're not at the last parameter yet
     if (index !== (paramNodes.length - 1)) {
       paramString = paramString + ', ';
     }
@@ -60,7 +78,40 @@ const buildAnonymousParamsList = (paramNodes) => {
   paramString = paramString + ')';
   return paramString;
 }
-exports.buildAnonymousParamsList = buildAnonymousParamsList;
+exports.buildParamsListString = buildParamsListString;
+
+/** @function
+ * @name buildParamLoggingStatement
+ * @param { String } parameterName The name of the variable
+ * @param { String } relPathToFile The relative path to the file
+ * @param { String } linenum The line number
+ * @param { String } functionName The name of the function being logged.
+ * @returns { Object } An expression object that translates into console.logging the parameter name and value
+ * @description Convenience function that does the heavy lifting of creating the expression that console.logs the parameter name and value
+ */
+ const buildParamLoggingStatement = (parameterName, relPathToFile, linenum, functionName) => {
+  let announcement = `${LIA_PREFIX}\t${relPathToFile}:${linenum}${functionName}:param ${parameterName} value:${LIA_SUFFIX} \n\t\t\t\t\t\t\t\t\t\t`;
+
+  let quasis = [
+    j.templateElement({ cooked: announcement, raw: announcement }, true),
+  ];
+
+  // The below call expressions gives us "decycle(foo)""
+  let decycleExp = j.callExpression(j.identifier('decycle'), [j.identifier(parameterName)]);
+
+  // The below call expressions gives us "JSON.stringify(decycle(foo))"
+  let stringifyCallExpression = 
+    j.callExpression(j.identifier('JSON.stringify'), [decycleExp]);
+
+  // The below gives us something like
+  //   `[logitall]  	__testfixtures__/function-anonymous-logparams.input.ts:1::param paramOne value: 
+  //     ${JSON.stringify(decycle(paraobjmOne))}`
+  let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
+
+  let consoleCallExpression = j.callExpression(j.identifier('console.log'), [logTemplateLiteral]);
+  let expressionStatement = j.expressionStatement(consoleCallExpression);
+  return expressionStatement;
+}
 
 /** @function
  * @name @buildParamLoggingList
@@ -85,54 +136,105 @@ const buildParamLoggingList = (paramNodes, relPathToFile, linenum, functionName)
     // comes up again. This is just to give me some sort of context for when I
     // am trying to solve the problem that I was trying to solve previously,
     // that again, I don't remember what was
-    // if (currentNode.type == 'ObjectPattern') {
-    //   return 1;
-    // }
 
 
-    // Babel turn sconstructor(myVar:number) parameter node into an Identifier node
-    // Baben turns consturctor(private myVar:number) parameter node into a TSParameterProperty node
+
+    // If the parameter contains no TypeScript access modifier (i.e. private, public, etc), e.g. constructor(myVar:number)
+    // Babel parses the function parameter, myVar, into an Identifier type node
+    // However, if the parameter does have a TypeScript access modifier, e.g. constructor(private myVar:number)  
+    // Babel parses the function parameter node into a TSParameterProperty node
+    // So in that case we need to dig one level deeper to get the name of the parameter.
     if (!currentNodeName && currentNode.type === 'TSParameterProperty') {
-      // The solution is to get TSParameterProperty.paramter.name
-      currentNodeName = currentNode.parameter.name;
+      // The solution is to get TSParameterProperty.paramter.name or some variation of that
+
+      // Check to see if this is TypeScript with an assigment, e.g.
+      // export class HttpHandler {
+
+      //   constructor(
+      //     protected routes = 5,
+      //   ) {
+      //     let q = 5;
+      //   }
+      // }
+      // 
+      // If so, then go get routes we need to do theTypeScriptNode.parameter.left.name;
+      if (currentNode.parameter.type == 'AssignmentPattern') {
+        currentNodeName = currentNode.parameter.left.name;
+      } else {
+        currentNodeName = currentNode.parameter.name;
+      }
     }
 
-    // If we have a rest parameter (i.e. a ...myParamName in the following:
-    //  function doStuff(...myParamName) {
-    //
-    //  }
-    // Then Babel will end up putting a RestElement in the params[] array,
-    if (!currentNodeName && currentNode.type === 'RestElement') {
-      // The solution is to descend into the RestElement and get the child identifier
-      currentNodeName = currentNode.argument.name;
+    if (currentNode.type == 'ObjectPattern') {
+      // Using https://simonsmith.io/destructuring-objects-as-function-parameters-in-es6 as a guide
+
+      if (currentNode.properties) {
+        for (let propIndex = 0; propIndex < currentNode.properties.length; propIndex++) {
+          let currentProperty = currentNode.properties[propIndex];
+
+          /*
+            Check if extracted values are being renamed. For example, in the case where we have the following
+
+            function myFunc({someLongPropertyName: myval}) {
+              doStuff(prop);
+            }
+
+            as far as the AST is concerned, as usual destructuring ObjectPattern, e.g. for({myval}) will have both the Property
+            key Identifier node and the Property value Identifier node as both having the name "myval". But for myfunc() above, 
+            the Property's key, someLongPropertyName, has an Identifier node with the name someLongPropertyName and the Property's 
+            value, myval, which is what we actually want to print to console, has an Identifier with the name "myval".
+
+            So we do a check that's key.name === value.name ? key.name : value.name
+
+            as the property value. So we need to do a check where we say "usually use the key as the name of the variable we want to
+            console.log() out to the console, but in the case where the key and the value"
+          */
+          let currPropertyName;
+
+          if (currentProperty.value.type === 'Identifier') {
+            if (currentProperty.key.name === currentProperty.value.name) {
+              currPropertyName = currentProperty.key.name;
+            } else {
+              currPropertyName = currentProperty.value.name;
+            }
+          } else if (currentProperty.value.type === 'AssignmentPattern') {
+            // If we have a default assignment using the destructuring idiom,
+            // e.g.
+            //
+            // function camel({name = 'Default user', age = 'N/A'} = {name: "asdf"}) {
+            //  
+            // }
+            //
+            // Then we have an assignment pattern that we have to dig into to get the 
+            // param values
+            currPropertyName = currentProperty.value.left.name;
+          }
+
+          let paramLoggingStatement = buildParamLoggingStatement(currPropertyName, relPathToFile, linenum, functionName);
+          returnExpressionNodes.push(paramLoggingStatement);
+        }
+      }      
+    } else {
+      // If we have a rest parameter (i.e. a ...myParamName in the following:
+      //  function doStuff(...myParamName) {
+      //
+      //  }
+
+      // Then Babel will end up putting a RestElement in the params[] array,
+      if (!currentNodeName && currentNode.type === 'RestElement') {
+        // The solution is to descend into the RestElement and get the child identifier
+        currentNodeName = currentNode.argument.name;
+      }
+
+      let paramLoggingStatement = buildParamLoggingStatement(currentNodeName, relPathToFile, linenum, functionName);    
+      returnExpressionNodes.push(paramLoggingStatement);
     }
-
-    let announcement = `${LIA_PREFIX}\t${relPathToFile}:${linenum}${functionName}:param ${currentNodeName} value:${LIA_SUFFIX} \n\t\t\t\t\t\t\t\t\t\t`;
-
-    let quasis = [
-      j.templateElement({ cooked: announcement, raw: announcement }, true),
-    ];
-
-    // The below call expressions gives us "decycle(foo)""
-    let decycleExp = j.callExpression(j.identifier('decycle'), [j.identifier(currentNodeName)]);
-
-    // The below call expressions gives us "JSON.stringify(decycle(foo))"
-    let stringifyCallExpression = 
-      j.callExpression(j.identifier('JSON.stringify'), [decycleExp]);
-
-    // The below gives us something like
-    //   `[logitall]  	__testfixtures__/function-anonymous-logparams.input.ts:1::param paramOne value: 
-    //     ${JSON.stringify(decycle(paramOne))}`
-    let logTemplateLiteral = j.templateLiteral(quasis, [stringifyCallExpression]);
-
-    let consoleCallExpression = j.callExpression(j.identifier('console.log'), [logTemplateLiteral]);
-    let expressionStatement = j.expressionStatement(consoleCallExpression);
-    returnExpressionNodes.push(expressionStatement);
   }
 
   return returnExpressionNodes;
 }
 exports.buildParamLoggingList = buildParamLoggingList;
+
 
 /** @function
  * @name printRxjsPipeStageLogFunction

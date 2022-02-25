@@ -84,7 +84,7 @@ module.exports = function (fileInfo, api, options) {
         // at some point in the future.
         let functionName = _.get(p, 'node.id.name', 'function');
 
-        const paramString = utils.buildAnonymousParamsList(p.node.params);
+        const paramString = utils.buildParamsListString(p.node.params);
         let relPathToFile = utils.calculatedRelPath(filepath, relPath);
         let linenum = PRINT_LINE_NUMBERS ? `${utils.getFunctionStartLineNumber(p)}:` : '';
 
@@ -117,7 +117,7 @@ module.exports = function (fileInfo, api, options) {
       .forEach(p => {
         let functionBlockBody = p.node.body.body;
 
-        const paramString = utils.buildAnonymousParamsList(p.node.params);
+        const paramString = utils.buildParamsListString(p.node.params);
         let relPathToFile = utils.calculatedRelPath(filepath, relPath);
         let linenum = PRINT_LINE_NUMBERS ? `${utils.getFunctionStartLineNumber(p)}:` : '';
 
@@ -148,7 +148,7 @@ module.exports = function (fileInfo, api, options) {
   const addLoggingToArrowFunctions = (path, filepath, shouldLogParams) => {
     path.find(j.ArrowFunctionExpression)
       .forEach(p => {
-        const paramString = utils.buildAnonymousParamsList(p.node.params);
+        const paramString = utils.buildParamsListString(p.node.params);
 
         let blockStatementBody = _.get(p, 'node.body.body', false);
         let relPathToFile = utils.calculatedRelPath(filepath, relPath);
@@ -277,7 +277,7 @@ module.exports = function (fileInfo, api, options) {
         //
 
         let nodeType = _.get(p, 'parent.node.type', '');
-        console.log(nodeType);
+
         if (nodeType === 'IfStatement' ||
             nodeType === 'ForStatement' ||
             nodeType === 'ForInStatement' ||
@@ -402,7 +402,6 @@ module.exports = function (fileInfo, api, options) {
   // this will happen to every JavaScript file regards of platform, and we can refine and optimize over time
   if (logParamsEnabled || rxjsSupport) {
     let circularReferenceHandlerHeader = utils.circularRefHandlerCode();
-    console.log(circularReferenceHandlerHeader);
     rootSource = circularReferenceHandlerHeader + rootSource;
   }
 
