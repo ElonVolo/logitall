@@ -13,19 +13,19 @@
     "logitall": "bin/logitall.js"
   },
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^8.9.0",
+    "@babel/eslint-parser": "^7.17.0",
+    "eslint": "^8.10.0",
     "jest": "^27.5.1"
   },
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^9.0.0",
-    "esbuild": "^0.14.23",
+    "esbuild": "^0.14.25",
     "evcodeshift": "^2.3.0",
     "jscodeshift-helper": "^1.1.0",
     "json-cycle": "^1.3.0",
     "lodash": "^4.17.21",
-    "node": "^17.4.0"
+    "node": "^17.5.0"
   },
   "keywords": [
     "console.log",
