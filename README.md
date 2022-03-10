@@ -20,6 +20,7 @@ Usage: logitall [OPTION] logitall (FILE | DIR)
 Options:
   --ignore-config <configfile>  a .gitignore-style list of file patterns to
                                 ignore
+  --gitignore                   shortcut that uses the .gitignore in the current directory to ignore files
   --named-functions-only        only log non-anonymous functions and methods
   --rxjs                        support for adding logging to rxjs pipe stages
   --params                      log values of function parameters
