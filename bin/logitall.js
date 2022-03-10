@@ -9,6 +9,7 @@ commander
   .name('logitall')
   .usage('(filepath | dirpath)')
   .option('--ignore-config <configfile>', 'a .gitignore-style list of file patterns to ignore')
+  .option('--gitignore', 'shortcut that uses the .gitignore in the current directory to ignore files')
   .option('--named-functions-only', 'only log non-anonymous functions and methods')
   .option('--rxjs', 'support for adding logging to rxjs pipe stages')
   .option('--params', 'log values of function parameters')
@@ -35,6 +36,10 @@ let passedOptions = commander.opts();
 
 if (passedOptions.ignoreConfig) {
   args.push(`--ignore-config=${passedOptions.ignoreConfig}`);
+}
+
+if (passedOptions.gitignore) {
+  args.push('--gitignore');
 }
 
 if (passedOptions.namedFunctionsOnly) {
