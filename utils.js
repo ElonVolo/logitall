@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const j = require('jscodeshift');
+const j = require('evcodeshift');
 const fs = require('fs');
 const path = require('path');
 const esbuild = require('esbuild');

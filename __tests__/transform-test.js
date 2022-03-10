@@ -1,5 +1,5 @@
 jest.autoMockOff();
-const defineTest = require('jscodeshift/dist/testUtils').defineTest;
+const defineTest = require('evcodeshift/dist/testUtils').defineTest;
 
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', '--fail-on-error' : true}, 'function-anonymous', { 'parser': 'ts' });
 defineTest(__dirname + '../', 'transform', {'relpath': '__testfixtures__', 'params' : true, '--fail-on-error' : true }, 'function-anonymous-logparams', { 'parser': 'ts' });

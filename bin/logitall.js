@@ -27,7 +27,7 @@ if (commander.args.length === 0) {
 }
 
 let parentDir = require('path').resolve(__dirname, '..');
-let jsc = path.join(parentDir, 'node_modules', 'jscodeshift', 'bin', 'jscodeshift.js');
+let jsc = path.join(parentDir, 'node_modules', 'evcodeshift', 'bin', 'jscodeshift.js');
 let transformPath = path.join(parentDir, 'transform.js');
 let args = [jsc, '-t', transformPath, '--extensions=ts,js', '--parser=ts', commander.args[0], '--verbose=2'];
 

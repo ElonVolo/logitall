@@ -105,3 +105,6 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# evcodeshift unit test results
+unit_test_output/
